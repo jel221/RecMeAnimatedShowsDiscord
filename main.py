@@ -120,6 +120,7 @@ async def showadd(ctx, arg1, arg2):
         return
     uid = ctx.author.id
     show_name = str(arg1)
+    show = anilist.get_anime(show_name)
     show_id = anilist.get_anime_id(show_name)
     rating = arg2
 
@@ -128,14 +129,31 @@ async def showadd(ctx, arg1, arg2):
         await db.execute("INSERT INTO likes VALUES({id}, {idx}, {rat})".format(id=uid, idx=show_id, rat=rating))
         await db.commit()
     
+    embed = discord.Embed(
+            title="Added",
+            description= show["name_romaji"] + " has been added to your list of watched shows.",
+            color=0x1ABC9C
+        )
+    await ctx.send(embed=embed)
+    
 
 @bot.command()
 async def showrm(ctx, arg):
     uid = ctx.author.id
+    show = anilist.get_anime(arg)
     show_id = anilist.get_anime_id(arg)
+
     async with aiosqlite.connect(f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db") as db:
         await db.execute("DELETE FROM likes WHERE id = {id} AND idx = {idx}".format(id = uid, idx=show_id))
         await db.commit()
+    
+    embed = discord.Embed(
+            title="Removed",
+            description= show["name_romaji"] + " has been removed from your list of watched shows.",
+            color=0x1ABC9C
+        )
+    await ctx.send(embed=embed)
+
 
 @bot.command()
 async def showinfo(ctx, arg):
