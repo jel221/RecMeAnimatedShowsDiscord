@@ -1,10 +1,9 @@
 import os
-import random
-
 import discord
 from discord.ext import commands
 import aiosqlite
 from utils import *
+
 
 class Recommendations(commands.Cog):
     def __init__(self, bot):
@@ -35,12 +34,7 @@ class Recommendations(commands.Cog):
     @commands.command()
     async def rec(self, ctx, arg = 1):
         if not isinstance(arg, int) or not 1 <= arg <= 5:
-            embed = discord.Embed(
-                title="Incorrect argument",
-                description="Rating should be a whole number from 1 to 5.",
-                color=0xE02B2B
-            )
-            await ctx.send(embed=embed)
+            await ctx.send(embed=ARG_ERROR)
         uid = ctx.author.id
         async with aiosqlite.connect(f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db") as db:
             rows = await db.execute_fetchall("SELECT id, idx, value FROM likes WHERE id = {id}".format(id=uid))
@@ -65,23 +59,19 @@ class Recommendations(commands.Cog):
     async def showadd(self, ctx, q, rat):
         try:
             rating = int(rat)
-            assert 1 <= rating <= 10
+            assert (rating >= 1 and rating <= 10)
         except:
-            bad_arg = discord.Embed(
-                title="Incorrect argument",
-                description="Rating should be a whole number from 1 to 10.",
-                color=0xE02B2B
-            )
-            await ctx.send(embed=bad_arg)
+            await ctx.send(embed=ARG_ERROR)
             return
 
         try:
             top_result = get_first_result(q)
-        except NoResultException as _:
+        except IndexError:
             await ctx.send(embed=QUERY_ERROR)
             return
-        except Exception as _:
+        except Exception:
             await ctx.send(embed=UNEXPECTED_ERROR)
+            return
         
         show_name = top_result["title"]
         show_id = top_result["mal_id"]
@@ -104,11 +94,12 @@ class Recommendations(commands.Cog):
     async def showrm(self, ctx, q):
         try:
             top_result = get_first_result(q)
-        except NoResultException as _:
+        except IndexError:
             await ctx.send(embed=QUERY_ERROR)
             return
-        except Exception as _:
+        except Exception:
             await ctx.send(embed=UNEXPECTED_ERROR)
+            return
 
         show_name = top_result["title"]
         show_id = top_result["mal_id"]
@@ -128,7 +119,15 @@ class Recommendations(commands.Cog):
 
     @commands.command()
     async def showinfo(self, ctx, q):
-        show = get_first_result(q)
-        embed = self.get_embed(show)
+        try:
+            show = get_first_result(q)
+        except IndexError:
+            await ctx.send(embed=QUERY_ERROR)
+            return
+        except Exception:
+            await ctx.send(embed=UNEXPECTED_ERROR)
+            return
+
+        embed = get_embed(show)
         await ctx.send(embed=embed)
 

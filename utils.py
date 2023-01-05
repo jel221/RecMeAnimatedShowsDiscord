@@ -1,10 +1,7 @@
 import requests
 import json
 import discord
-
-class NoResultException(Exception):
-    "Raised when no results are found from the query."
-    pass
+import urllib.parse
 
 UNEXPECTED_ERROR = discord.Embed(
                 title="Unexpected Error",
@@ -14,9 +11,15 @@ UNEXPECTED_ERROR = discord.Embed(
 
 QUERY_ERROR = discord.Embed(
                 title="No results found.",
-                description="Please check for any errors in the name.",
+                description="Please use the full romaji name of the show (e.g. Instead of 'AOT', try 'Shingeki no Kyojin'.",
                 color=0xE02B2B
-            )            
+            )     
+
+ARG_ERROR = discord.Embed(
+                title="Incorrect argument",
+                description="Rating should be a whole number from 1 to 10.",
+                color=0xE02B2B
+            )    
 
 def get_embed(show : dict):
     embed = discord.Embed(
@@ -27,15 +30,14 @@ def get_embed(show : dict):
     return embed
 
 def get_first_result(q):
-    link = f"https://api.jikan.moe/v4/anime?q='{q}"
+    query = urllib.parse.quote(q)
+    link = f"https://api.jikan.moe/v4/anime?q='{query}'"
     data = requests.get(link)
     query = json.loads(data.text)
-    if query["items"]["count"] == 0:
-        raise NoResultException
     return query["data"][0]
 
-def get_rand_result():
-    link = f"https://api.jikan.moe/v4/anime?q='{q}"
+def get_rand_result(genre):
+    link = f"https://api.jikan.moe/v4/random/anime?genres='{genre}'"
     data = requests.get(link)
     query = json.loads(data.text)
     return query["data"]
