@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 import aiosqlite
 from utils import *
-import model
+import trainer.model as model
 
 class Recommendations(commands.Cog):
     def __init__(self, bot):
