@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 import aiosqlite
 from utils import *
-
+import model
 
 class Recommendations(commands.Cog):
     def __init__(self, bot):
@@ -38,8 +38,7 @@ class Recommendations(commands.Cog):
         uid = ctx.author.id
         async with aiosqlite.connect(f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db") as db:
             rows = await db.execute_fetchall("SELECT id, idx, value FROM likes WHERE id = {id}".format(id=uid))
-        for r in rows:
-            print(r)
+        result = model.get_result(rows, arg)
         # ML ALGORITHM
 
 
@@ -58,6 +57,8 @@ class Recommendations(commands.Cog):
     @commands.command()
     async def showadd(self, ctx, q, rat):
         try:
+            print(q)
+            print(rat)
             rating = int(rat)
             assert (rating >= 1 and rating <= 10)
         except:

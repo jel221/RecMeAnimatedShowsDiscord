@@ -25,10 +25,6 @@ async def on_ready() -> None:
     await bot.add_cog(Recommendations(bot))
     await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="anime, Type {} for help".format("$ar")))
     print(f"Logged in as {bot.user}")
-    print(f"discord.py API version: {discord.__version__}")
-    print(f"Python version: {platform.python_version()}")
-    print(f"Running on: {platform.system()} {platform.release()} ({os.name})")
-    print("-------------------")
 
 
 @bot.event
