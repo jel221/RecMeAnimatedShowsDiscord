@@ -1,6 +1,6 @@
 Discord bot to recommend animated shows based on your ratings of watched shows using a machine learning model, or randomly from a genre.
 
-You can invite this bot from: [URL REDACTED]
+You can invite this bot from: (https://discord.com/api/oauth2/authorize?client_id=1057942022192893952&permissions=534723947584&scope=bot)
 NOTE: Due to security concerns, the bot is offline at the moment. However, you can host this bot locally on your computer with your own token. Run /training/trainer.py to generate the model.
 
 Type $ar to get the list of available commands.
