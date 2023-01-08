@@ -3,11 +3,12 @@ import discord
 from discord.ext import commands
 import aiosqlite
 from utils import *
-import trainer.model as model
+import training.model as model
 
 class Recommendations(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.model = model.Model()
 
     @commands.command()
     async def ar(self, ctx):
@@ -16,7 +17,7 @@ class Recommendations(commands.Cog):
                 description="""
                 Usage:
                 
-                **$rec [Optional: Number of recommendations (Max 5)]** to be recommended a show based on your ratings.
+                **$rec [Optional: Number of recommendations (Max 10)]** to be recommended a show based on your ratings.
 
                 **$rand [Genre]** to be recommended a random show within a genre.
 
@@ -25,6 +26,7 @@ class Recommendations(commands.Cog):
                 **$showrm [Show Name]** to remove a show from your list of watched shows.
 
                 **$showinfo [Show Name]** to find information on a show.
+                *Hint:* Please use the full romaji name of the show (e.g. Instead of 'Attack on Titan' or 'AoT', try 'Shingeki no Kyojin'.
                 """,
                 color=0x7289DA
         )
@@ -32,14 +34,16 @@ class Recommendations(commands.Cog):
 
 
     @commands.command()
-    async def rec(self, ctx, arg = 1):
-        if not isinstance(arg, int) or not 1 <= arg <= 5:
+    async def rec(self, ctx, num = 1):
+        if not isinstance(num, int) or not 1 <= num <= 10:
             await ctx.send(embed=ARG_ERROR)
         uid = ctx.author.id
         async with aiosqlite.connect(f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db") as db:
-            rows = await db.execute_fetchall("SELECT id, idx, value FROM likes WHERE id = {id}".format(id=uid))
-        result = model.get_result(rows, arg)
-        # ML ALGORITHM
+            rows = await db.execute_fetchall("SELECT idx, value FROM likes WHERE id = {id}".format(id=uid))
+        result = self.model.get_result(rows, num)
+        for i in range(num):
+            embed = get_id_embed(result[i])
+            await ctx.send(f"Recommendation #{i}", embed=embed)
 
 
     @commands.command()
