@@ -4,10 +4,10 @@ import numpy as np
 
 class Model:
     def __init__(self):
-        self.interpreter = tf.lite.Interpreter(model_path="optimised_model.tflite")
+        self.interpreter = tf.lite.Interpreter(model_path="training/example_model.tflite")
         self.interpreter.allocate_tensors()
 
-        with open("./top.json") as file:
+        with open("training/top.json") as file:
             self.top = json.load(file)
 
     def get_result(self, rows, num):
@@ -25,15 +25,14 @@ class Model:
 
         output_data = self.interpreter.get_tensor(output_details[0]['index'])
 
-        top_copy = self.top[:]
-        sorted_output = sorted(zip(output_data, top_copy.keys()), reverse=True) # Sorts according to the first tuple value by default
+        probabilities = output_data[0]
+        top_copy = self.top.copy()
+        sorted_output = sorted(zip(probabilities, top_copy.keys()), reverse=True) # Sorts according to the first tuple value by default
 
         result = []
-        i = 0
-        while len(result) < 5:
-            show = sorted_output[i]
+        while len(result) < num:
+            show = sorted_output[i][1]
             if not watched[self.top[show]]:
-                result.append(show[1])
-            i += 1
+                result.append(show)
                 
         return result

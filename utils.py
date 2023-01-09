@@ -29,8 +29,8 @@ def get_embed(show : dict):
     embed.set_image(url=show["images"]["jpg"]["image_url"])
     return embed
 
-def get_id_embed(id : int):
-    link = f"https://api.jikan.moe/v4/anime?q='{id}'"
+def get_id_embed(id):
+    link = f"https://api.jikan.moe/v4/anime/{id}"
     data = requests.get(link)
     show = json.loads(data.text)["data"]
     embed = discord.Embed(

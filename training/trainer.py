@@ -10,7 +10,7 @@ rating_csv = pd.read_csv("./rating.csv")
 
 mal_ids = top_anime_csv["MAL_ID"]
 
-INPUT_SIZE = 500
+INPUT_SIZE = 2000
 
 id_to_idx = {int(mal_ids[i]):i for i in range(INPUT_SIZE)}
 if not os.path.exists("./top.json"):
@@ -45,17 +45,14 @@ def trainset_generator():
 
 model = tf.keras.Sequential([
     tf.keras.layers.InputLayer((INPUT_SIZE)),
-    tf.keras.layers.Embedding(INPUT_SIZE, 20),
+    tf.keras.layers.Embedding(INPUT_SIZE, 10),
     tf.keras.layers.Dense(32, "relu"),
     tf.keras.layers.Flatten(),
     tf.keras.layers.Dense(INPUT_SIZE, "softmax")
 ])
 
 model.compile(tf.keras.optimizers.Adam(), tf.keras.losses.CategoricalCrossentropy(), metrics=["accuracy"])
-
-model.summary()
-
-model.fit(x=trainset_generator(), use_multiprocessing=True)
+model.fit(x=trainset_generator())
 
 converter = tf.lite.TFLiteConverter.from_keras_model(model)
 tflite_model = converter.convert()
@@ -68,5 +65,5 @@ tflite_model_file.write_bytes(tflite_model)
 
 converter.optimizations = [tf.lite.Optimize.DEFAULT]
 tflite_quant_model = converter.convert()
-tflite_model_quant_file = tflite_models_dir/"optimised_model.tflite"
+tflite_model_quant_file = tflite_models_dir/"example_model.tflite"
 tflite_model_quant_file.write_bytes(tflite_quant_model)

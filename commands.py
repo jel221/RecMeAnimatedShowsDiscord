@@ -41,9 +41,11 @@ class Recommendations(commands.Cog):
         async with aiosqlite.connect(f"{os.path.realpath(os.path.dirname(__file__))}/database/database.db") as db:
             rows = await db.execute_fetchall("SELECT idx, value FROM likes WHERE id = {id}".format(id=uid))
         result = self.model.get_result(rows, num)
-        for i in range(num):
-            embed = get_id_embed(result[i])
+        i = 1
+        for anime in result:
+            embed = get_id_embed(anime)
             await ctx.send(f"Recommendation #{i}", embed=embed)
+            i += 1
 
 
     @commands.command()
@@ -61,8 +63,6 @@ class Recommendations(commands.Cog):
     @commands.command()
     async def showadd(self, ctx, q, rat):
         try:
-            print(q)
-            print(rat)
             rating = int(rat)
             assert (rating >= 1 and rating <= 10)
         except:
