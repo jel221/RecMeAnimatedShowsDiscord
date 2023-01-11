@@ -10,6 +10,7 @@ class Recommendations(commands.Cog):
         self.bot = bot
         self.model = model.Model()
 
+    # Help command
     @commands.command()
     async def ar(self, ctx):
         embed = discord.Embed(
@@ -32,9 +33,20 @@ class Recommendations(commands.Cog):
         )
         await ctx.send(embed=embed)
 
-
     @commands.command()
     async def rec(self, ctx, num = 1):
+        """
+            $rec Command that recommends shows based on user ratings.
+
+            Parameters:
+            ctx : Context object
+                Specifies channel, sender id, and message content.
+            num : int [1, 10]
+                Number of shows to recommend (Default: 1)
+
+            Output:
+                Sends NUM recommendations to CTX.
+        """
         if not isinstance(num, int) or not 1 <= num <= 10:
             await ctx.send(embed=ARG_ERROR)
         uid = ctx.author.id
@@ -50,6 +62,17 @@ class Recommendations(commands.Cog):
 
     @commands.command()
     async def rand(self, ctx, genre=""):
+        """
+            $rand Command that recommends a show randomly, or from a chosen genre.
+
+            Parameters:
+            ctx : Context object. See above for more details.
+            genre : str
+                Name of the genre. Empty by default.
+
+            Output:
+                Sends a recommendation to CTX.
+        """
         try:
             show = get_rand_result(genre)
         except:
@@ -62,6 +85,20 @@ class Recommendations(commands.Cog):
 
     @commands.command()
     async def showadd(self, ctx, q, rat):
+        """
+            $showadd Command which adds a show to the user ratings list.
+
+            Parameters:
+            ctx : Context object. See above for more details.
+            q : str
+                Full name of the show in romaji
+            rat : int [1, 10]
+                Rating for show q
+
+            Output:
+                Inserts a row (replacing it if it already exists) into the database according to the information given.
+                Sends a message to the channel upon success.
+        """
         try:
             rating = int(rat)
             assert (rating >= 1 and rating <= 10)
@@ -97,6 +134,18 @@ class Recommendations(commands.Cog):
 
     @commands.command()
     async def showrm(self, ctx, q):
+        """
+            $showrm Command that removes a show from the user's list of watched shows.
+
+            Parameters:
+            ctx : Context object. See above for more details.
+            q : str
+                Full name of the show in romaji
+
+            Output:
+                Deletes the row that has the ID of the show specified by q in the database.
+                Sends a message to the channel upon success.
+        """
         try:
             top_result = get_first_result(q)
         except IndexError:
@@ -124,6 +173,17 @@ class Recommendations(commands.Cog):
 
     @commands.command()
     async def showinfo(self, ctx, q):
+        """
+            $showinfo Command that shows information about a show.
+
+            Parameters:
+            ctx : Context object. See above for more details.
+            q : str
+                Full name of the show in romaji
+
+            Output:
+                Sends message to ctx containing information about the specified show.
+        """
         try:
             show = get_first_result(q)
         except IndexError:
