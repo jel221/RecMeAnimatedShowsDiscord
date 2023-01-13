@@ -12,7 +12,7 @@ mal_ids = top_anime_csv["MAL_ID"]
 
 # Takes top INPUT_SIZE animes to be considered for recommendation.
 # You can adjust this parameter, but larger INPUT_SIZE results in increased training time.
-INPUT_SIZE = 2000 
+INPUT_SIZE = 2000
 
 id_to_idx = {int(mal_ids[i]):i for i in range(INPUT_SIZE)}
 if not os.path.exists("./top.json"):

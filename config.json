@@ -1,0 +1,10 @@
+{
+    "prefix": "$",
+    "token": "INSERT YOUR OWN TOKEN HERE",
+    "permissions": "534723947584",
+    "application_id": "1057942022192893952",
+    "sync_commands_globally": false,
+    "owners": [
+      231676415416860672
+    ]
+}
